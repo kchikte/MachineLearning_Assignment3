@@ -2,6 +2,11 @@ import numpy as np
 from scipy.io import loadmat
 from scipy.optimize import minimize
 
+from sklearn import svm, metrics
+from sklearn.svm import SVC
+
+import datetime
+
 
 def preprocess():
     """ 
@@ -263,6 +268,77 @@ print('\n\n--------------SVM-------------------\n\n')
 ##################
 # YOUR CODE HERE #
 ##################
+
+#SVM for linear kernel
+train_time = []
+start_time=datetime.datetime.now()  # Starting timer to calculate the training time
+clf = SVC(kernel='linear')
+#Fit the SVM model according to the given training data.
+clf.fit(train_data, train_label.ravel())
+end_time=datetime.datetime.now() # Ending timer to calculate the training time
+time_diff=end_time-start_time
+micro_sec = time_diff.seconds*1000000+time_diff.microseconds
+train_time.append(micro_sec)
+print('\n SVM part1: linear kernel')
+#"score" returns the mean accuracy on the given test data and labels.
+print('\n Training set Accuracy:' + str(clf.score(train_data, train_label)*100) + '%')
+print('\n Validation set Accuracy:' + str(clf.score(validation_data, validation_label)*100) + '%')
+print('\n Testing set Accuracy:' + str(clf.score(test_data, test_label)*100) + '%')
+print("Train Time : "+repr(train_time))
+
+#SVM for rbf kernel and gamma=1
+train_time = []
+start_time=datetime.datetime.now()  # Starting timer to calculate the training time
+clf = SVC(kernel='rbf', gamma=1)
+#Fit the SVM model according to the given training data.
+clf.fit(train_data, train_label.ravel())
+end_time=datetime.datetime.now() # Ending timer to calculate the training time
+time_diff=end_time-start_time
+micro_sec = time_diff.seconds*1000000+time_diff.microseconds
+train_time.append(micro_sec)
+print('\n SVM part2: rbf kernel and gamma=1')
+#"score" returns the mean accuracy on the given test data and labels.
+print('\n Training set Accuracy:' + str(clf.score(train_data, train_label)*100) + '%')
+print('\n Validation set Accuracy:' + str(clf.score(validation_data, validation_label)*100) + '%')
+print('\n Testing set Accuracy:' + str(clf.score(test_data, test_label)*100) + '%')
+print("Train Time : "+repr(train_time))
+
+#SVM for rbf kernel
+train_time = []
+start_time=datetime.datetime.now()  # Starting timer to calculate the training time
+clf = SVC(kernel='rbf')
+#Fit the SVM model according to the given training data.
+clf.fit(train_data, train_label.ravel())
+end_time=datetime.datetime.now() # Ending timer to calculate the training time
+time_diff=end_time-start_time
+micro_sec = time_diff.seconds*1000000+time_diff.microseconds
+train_time.append(micro_sec)
+print('\n SVM part3: rbf kernel')
+#"score" returns the mean accuracy on the given test data and labels.
+print('\n Training set Accuracy:' + str(clf.score(train_data, train_label)*100) + '%')
+print('\n Validation set Accuracy:' + str(clf.score(validation_data, validation_label)*100) + '%')
+print('\n Testing set Accuracy:' + str(clf.score(test_data, test_label)*100) + '%')
+print("Train Time : "+repr(train_time))
+
+#SVM for different C
+for i in range(10,110,10):
+    train_time = []
+    start_time=datetime.datetime.now()  # Starting timer to calculate the training time
+    clf = SVC(kernel='rbf', C=i)
+    #Fit the SVM model according to the given training data.
+    clf.fit(train_data, train_label.ravel())
+    end_time=datetime.datetime.now() # Ending timer to calculate the training time
+    time_diff=end_time-start_time
+    micro_sec = time_diff.seconds*1000000+time_diff.microseconds
+    train_time.append(micro_sec)
+    print('\n SVM part4: rbf kernel and C:'+str(i))
+    #"score" returns the mean accuracy on the given test data and labels.
+    print('\n Training set Accuracy:' + str(clf.score(train_data, train_label)*100) + '%')
+    print('\n Validation set Accuracy:' + str(clf.score(validation_data, validation_label)*100) + '%')
+    print('\n Testing set Accuracy:' + str(clf.score(test_data, test_label)*100) + '%')
+    print("Train Time : "+repr(train_time))
+
+
 
 
 
