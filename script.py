@@ -190,7 +190,16 @@ def mlrObjFunction(params, *args):
     # YOUR CODE HERE #
     ##################
     # HINT: Do not forget to add the bias term to your input data
-
+    bias_term = np.ones((n_data, 1)) #define bias term
+    x = np.concatenate((bias_term, train_data),1) #add bias term
+    w = params.reshape((n_feature+1,n_class))   #for bias
+    theta = np.zeros((n_feature+1,n_class))
+    a = np.exp(np.dot(x,w)) 
+    b = np.sum((a),axis=1).reshape(n_data,1)
+    theta = np.divide(a,b) #calculate theta
+    error = np.multiply(-1,np.sum(np.multiply(labeli,np.log(theta))))/n_data
+    print('error:'+str(error))
+    error_grad = ((np.dot(np.transpose(x),np.subtract(theta,labeli)))/n_data).flatten() #gradient of error function
 
     return error, error_grad
 
@@ -216,6 +225,15 @@ def mlrPredict(W, data):
     # YOUR CODE HERE #
     ##################
     # HINT: Do not forget to add the bias term to your input data
+    N = data.shape[0]
+    bias = np.ones((N,1)) #bias term containing athetall ones
+    x = np.hstack((bias,data)) #adding bias term to data
+    
+    label = np.zeros((N,1));   # each column is probability for class Ck
+
+    label = sigmoid(np.dot(x, W))   # compute probabilities
+    label = np.argmax(label, axis=1)    # get maximum for each class
+    label = label.reshape((N,1))
 
     return label
 

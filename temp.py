@@ -169,6 +169,79 @@ def blrPredict(W, data):
     label = label.reshape((N,1))
     return label
 
+def mlrObjFunction(params, *args):
+    """
+    mlrObjFunction computes multi-class Logistic Regression error function and
+    its gradient.
+
+    Input:
+        initialWeights_b: the weight vector of size (D + 1) x 10
+        train_data: the data matrix of size N x D
+        labeli: the label vector of size N x 1 where each entry can be either 0 or 1
+                representing the label of corresponding feature vector
+
+    Output:
+        error: the scalar value of error function of multi-class logistic regression
+        error_grad: the vector of size (D+1) x 10 representing the gradient of
+                    error function
+    """
+    train_data, labeli = args
+    n_data = train_data.shape[0]
+    n_feature = train_data.shape[1]
+    error = 0
+    error_grad = np.zeros((n_feature + 1, n_class))
+
+    ##################
+    # YOUR CODE HERE #
+    ##################
+    # HINT: Do not forget to add the bias term to your input data
+    bias_term = np.ones((n_data, 1)) #define bias term
+    x = np.concatenate((bias_term, train_data),1) #add bias term
+    w = params.reshape((n_feature+1,n_class))   #for bias
+    theta = np.zeros((n_feature+1,n_class))
+    a = np.exp(np.dot(x,w)) 
+    b = np.sum((a),axis=1).reshape(n_data,1)
+    theta = np.divide(a,b) #calculate theta
+    error = np.multiply(-1,np.sum(np.multiply(labeli,np.log(theta))))/n_data
+    print('error:'+str(error))
+    error_grad = ((np.dot(np.transpose(x),np.subtract(theta,labeli)))/n_data).flatten() #gradient of error function
+
+    return error, error_grad
+
+
+def mlrPredict(W, data):
+    """
+     mlrObjFunction predicts the label of data given the data and parameter W
+     of Logistic Regression
+
+     Input:
+         W: the matrix of weight of size (D + 1) x 10. Each column is the weight
+         vector of a Logistic Regression classifier.
+         X: the data matrix of size N x D
+
+     Output:
+         label: vector of size N x 1 representing the predicted label of
+         corresponding feature vector given in data matrix
+
+    """
+    label = np.zeros((data.shape[0], 1))
+
+    ##################
+    # YOUR CODE HERE #
+    ##################
+    # HINT: Do not forget to add the bias term to your input data
+    N = data.shape[0]
+    bias = np.ones((N,1)) #bias term containing athetall ones
+    x = np.hstack((bias,data)) #adding bias term to data
+    
+    label = np.zeros((N,1));   # each column is probability for class Ck
+
+    label = sigmoid(np.dot(x, W))   # compute probabilities
+    label = np.argmax(label, axis=1)    # get maximum for each class
+    label = label.reshape((N,1))
+    return label
+
+
 """
 Script for Logistic Regression
 """
@@ -212,12 +285,12 @@ opts = {'maxiter': 100}
 # =============================================================================
 
 
-print('\n\n--------------SVM-------------------\n\n')
+#print('\n\n--------------SVM-------------------\n\n')
 ##################
 # YOUR CODE HERE #
 ##################
-train_time = []
-start_time=datetime.datetime.now()  # Starting timer to calculate the training time
+#train_time = []
+#start_time=datetime.datetime.now()  # Starting timer to calculate the training time
 # =============================================================================
 # clf = SVC(kernel='linear')
 # #Fit the SVM model according to the given training data.
@@ -287,22 +360,48 @@ start_time=datetime.datetime.now()  # Starting timer to calculate the training t
 #     print('\n Testing set Accuracy:' + str(clf.score(test_data, test_label)*100) + '%')
 #     print("Train Time : "+repr(train_time))
 # =============================================================================
-#C=100
-train_time = []
-start_time=datetime.datetime.now()  # Starting timer to calculate the training time
-clf = SVC(kernel='rbf', C=100)
-#Fit the SVM model according to the given training data.
-clf.fit(train_data, train_label.ravel())
-end_time=datetime.datetime.now() # Ending timer to calculate the training time
-time_diff=end_time-start_time
-micro_sec = time_diff.seconds*1000000+time_diff.microseconds
-train_time.append(micro_sec)
-print('SVM part4: rbf kernel and C:'+str(100))
-#"score" returns the mean accuracy on the given test data and labels.
-print('Training set Accuracy:' + str(clf.score(train_data, train_label)*100) + '%')
-print('Validation set Accuracy:' + str(clf.score(validation_data, validation_label)*100) + '%')
-print('Testing set Accuracy:' + str(clf.score(test_data, test_label)*100) + '%')
-print("Train Time : "+repr(train_time))
+# =============================================================================
+# #C=100
+# train_time = []
+# start_time=datetime.datetime.now()  # Starting timer to calculate the training time
+# clf = SVC(kernel='rbf', C=100)
+# #Fit the SVM model according to the given training data.
+# clf.fit(train_data, train_label.ravel())
+# end_time=datetime.datetime.now() # Ending timer to calculate the training time
+# time_diff=end_time-start_time
+# micro_sec = time_diff.seconds*1000000+time_diff.microseconds
+# train_time.append(micro_sec)
+# print('SVM part4: rbf kernel and C:'+str(100))
+# #"score" returns the mean accuracy on the given test data and labels.
+# print('Training set Accuracy:' + str(clf.score(train_data, train_label)*100) + '%')
+# print('Validation set Accuracy:' + str(clf.score(validation_data, validation_label)*100) + '%')
+# print('Testing set Accuracy:' + str(clf.score(test_data, test_label)*100) + '%')
+# print("Train Time : "+repr(train_time))
+# =============================================================================
+
+"""
+Script for Extra Credit Part
+"""
+# FOR EXTRA CREDIT ONLY
+W_b = np.zeros((n_feature + 1, n_class))
+initialWeights_b = np.zeros((n_feature + 1, n_class))
+opts_b = {'maxiter': 100}
+
+args_b = (train_data, Y)
+nn_params = minimize(mlrObjFunction, initialWeights_b, jac=True, args=args_b, method='CG', options=opts_b)
+W_b = nn_params.x.reshape((n_feature + 1, n_class))
+
+# Find the accuracy on Training Dataset
+predicted_label_b = mlrPredict(W_b, train_data)
+print('\n Training set Accuracy:' + str(100 * np.mean((predicted_label_b == train_label).astype(float))) + '%')
+
+# Find the accuracy on Validation Dataset
+predicted_label_b = mlrPredict(W_b, validation_data)
+print('\n Validation set Accuracy:' + str(100 * np.mean((predicted_label_b == validation_label).astype(float))) + '%')
+
+# Find the accuracy on Testing Dataset
+predicted_label_b = mlrPredict(W_b, test_data)
+print('\n Testing set Accuracy:' + str(100 * np.mean((predicted_label_b == test_label).astype(float))) + '%')
 
 
 
