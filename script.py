@@ -125,7 +125,7 @@ def blrObjFunction(initialWeights, *args):
     
     theta = sigmoid(x @ w) #calculate theta
     error = -np.sum(labeli*np.log(theta) + (1-labeli)*np.log(1-theta)) #error
-    print('error:'+str(error))
+#    print('error:'+str(error))
     temp = np.multiply((theta - labeli) , x)
     error_grad = np.sum(temp, axis=0) #gradient of error function
     
@@ -198,7 +198,7 @@ def mlrObjFunction(params, *args):
     b = np.sum((a),axis=1).reshape(n_data,1)
     theta = np.divide(a,b) #calculate theta
     error = np.multiply(-1,np.sum(np.multiply(labeli,np.log(theta))))/n_data
-    print('error:'+str(error))
+#    print('error:'+str(error))
     error_grad = ((np.dot(np.transpose(x),np.subtract(theta,labeli)))/n_data).flatten() #gradient of error function
 
     return error, error_grad
@@ -269,14 +269,20 @@ for i in range(n_class):
 # Find the accuracy on Training Dataset
 predicted_label = blrPredict(W, train_data)
 print('\n Training set Accuracy:' + str(100 * np.mean((predicted_label == train_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(train_label,predicted_label)
+print(cm)
 
 # Find the accuracy on Validation Dataset
 predicted_label = blrPredict(W, validation_data)
 print('\n Validation set Accuracy:' + str(100 * np.mean((predicted_label == validation_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(validation_label,predicted_label)
+print(cm)
 
 # Find the accuracy on Testing Dataset
 predicted_label = blrPredict(W, test_data)
 print('\n Testing set Accuracy:' + str(100 * np.mean((predicted_label == test_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(test_label,predicted_label)
+print(cm)
 
 """
 Script for Support Vector Machine
@@ -357,9 +363,6 @@ for i in range(10,110,10):
     print("Train Time : "+repr(train_time))
 
 
-
-
-
 """
 Script for Extra Credit Part
 """
@@ -375,11 +378,18 @@ W_b = nn_params.x.reshape((n_feature + 1, n_class))
 # Find the accuracy on Training Dataset
 predicted_label_b = mlrPredict(W_b, train_data)
 print('\n Training set Accuracy:' + str(100 * np.mean((predicted_label_b == train_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(train_label,predicted_label_b)
+print(cm)
 
 # Find the accuracy on Validation Dataset
 predicted_label_b = mlrPredict(W_b, validation_data)
 print('\n Validation set Accuracy:' + str(100 * np.mean((predicted_label_b == validation_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(validation_label,predicted_label_b)
+print(cm)
 
 # Find the accuracy on Testing Dataset
 predicted_label_b = mlrPredict(W_b, test_data)
 print('\n Testing set Accuracy:' + str(100 * np.mean((predicted_label_b == test_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(test_label,predicted_label_b)
+print(cm)
+

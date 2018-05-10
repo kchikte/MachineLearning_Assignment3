@@ -13,6 +13,9 @@ from sklearn import svm, metrics
 from sklearn.svm import SVC
 from sklearn.utils import column_or_1d
 import datetime
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import metrics
 
 
 def preprocess():
@@ -203,7 +206,7 @@ def mlrObjFunction(params, *args):
     b = np.sum((a),axis=1).reshape(n_data,1)
     theta = np.divide(a,b) #calculate theta
     error = np.multiply(-1,np.sum(np.multiply(labeli,np.log(theta))))/n_data
-    print('error:'+str(error))
+#    print('error:'+str(error))
     error_grad = ((np.dot(np.transpose(x),np.subtract(theta,labeli)))/n_data).flatten() #gradient of error function
 
     return error, error_grad
@@ -264,25 +267,32 @@ for i in range(n_class):
 W = np.zeros((n_feature + 1, n_class))
 initialWeights = np.zeros((n_feature + 1, 1))
 opts = {'maxiter': 100}
-# =============================================================================
-# for i in range(n_class):
-#     labeli = Y[:, i].reshape(n_train, 1)
-#     args = (train_data, labeli)
-#     nn_params = minimize(blrObjFunction, initialWeights, jac=True, args=args, method='CG', options=opts)
-#     W[:, i] = nn_params.x.reshape((n_feature + 1,))
-# 
-# # Find the accuracy on Training Dataset
-# predicted_label = blrPredict(W, train_data)
-# print('\n Training set Accuracy:' + str(100 * np.mean((predicted_label == train_label).astype(float))) + '%')
-# 
-# # Find the accuracy on Validation Dataset
-# predicted_label = blrPredict(W, validation_data)
-# print('\n Validation set Accuracy:' + str(100 * np.mean((predicted_label == validation_label).astype(float))) + '%')
-# 
-# # Find the accuracy on Testing Dataset
-# predicted_label = blrPredict(W, test_data)
-# print('\n Testing set Accuracy:' + str(100 * np.mean((predicted_label == test_label).astype(float))) + '%')
-# =============================================================================
+for i in range(n_class):
+    labeli = Y[:, i].reshape(n_train, 1)
+    args = (train_data, labeli)
+    nn_params = minimize(blrObjFunction, initialWeights, jac=True, args=args, method='CG', options=opts)
+    W[:, i] = nn_params.x.reshape((n_feature + 1,))
+print('Error:'+str(nn_params.x))
+
+# Find the accuracy on Training Dataset
+predicted_label = blrPredict(W, train_data)
+print('\n Training set Accuracy:' + str(100 * np.mean((predicted_label == train_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(train_label,predicted_label)
+print(cm)
+
+# Find the accuracy on Validation Dataset
+predicted_label = blrPredict(W, validation_data)
+print('\n Validation set Accuracy:' + str(100 * np.mean((predicted_label == validation_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(validation_label,predicted_label)
+print(cm)
+
+
+# Find the accuracy on Testing Dataset
+predicted_label = blrPredict(W, test_data)
+print('\n Testing set Accuracy:' + str(100 * np.mean((predicted_label == test_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(test_label,predicted_label)
+print(cm)
+
 
 
 #print('\n\n--------------SVM-------------------\n\n')
@@ -394,15 +404,20 @@ W_b = nn_params.x.reshape((n_feature + 1, n_class))
 # Find the accuracy on Training Dataset
 predicted_label_b = mlrPredict(W_b, train_data)
 print('\n Training set Accuracy:' + str(100 * np.mean((predicted_label_b == train_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(train_label,predicted_label_b)
+print(cm)
 
 # Find the accuracy on Validation Dataset
 predicted_label_b = mlrPredict(W_b, validation_data)
 print('\n Validation set Accuracy:' + str(100 * np.mean((predicted_label_b == validation_label).astype(float))) + '%')
+cm = metrics.confusion_matrix(validation_label,predicted_label_b)
+print(cm)
 
 # Find the accuracy on Testing Dataset
 predicted_label_b = mlrPredict(W_b, test_data)
 print('\n Testing set Accuracy:' + str(100 * np.mean((predicted_label_b == test_label).astype(float))) + '%')
-
+cm = metrics.confusion_matrix(test_label,predicted_label_b)
+print(cm)
 
 
 
